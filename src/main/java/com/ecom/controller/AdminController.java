@@ -201,13 +201,16 @@ public class AdminController {
 	public String updateProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
 			HttpSession session, Model m) {
 
-		Product updateProduct = productService.updateProduct(product, image);
-		if (!ObjectUtils.isEmpty(updateProduct)) {
-			session.setAttribute("succMsg", "Product update success");
+		if (product.getDiscount() < 0 || product.getDiscount() > 100) {
+			session.setAttribute("errorMsg", "invalid Discount");
 		} else {
-			session.setAttribute("errorMsg", "Something wrong on server");
+			Product updateProduct = productService.updateProduct(product, image);
+			if (!ObjectUtils.isEmpty(updateProduct)) {
+				session.setAttribute("succMsg", "Product update success");
+			} else {
+				session.setAttribute("errorMsg", "Something wrong on server");
+			}
 		}
-
 		return "redirect:/admin/editProduct/" + product.getId();
 	}
 }
