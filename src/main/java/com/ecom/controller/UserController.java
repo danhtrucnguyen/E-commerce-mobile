@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ecom.model.Cart;
 import com.ecom.model.Category;
 import com.ecom.model.UserDtls;
+import com.ecom.repository.UserRepository;
 import com.ecom.service.CartService;
 import com.ecom.service.CategoryService;
 import com.ecom.service.UserService;
@@ -44,6 +45,8 @@ public class UserController {
 			String email = p.getName();
 			UserDtls userDtls = userService.getUserByEmail(email);
 			m.addAttribute("user", userDtls);
+			Integer countCart = cartService.getCountCart(userDtls.getId());
+			m.addAttribute("countCart", countCart);
 		}
 
 		List<Category> allActiveCategory = categoryService.getAllActiveCategory();
@@ -60,5 +63,30 @@ public class UserController {
 			session.setAttribute("succMsg", "Product added to cart");
 		}
 		return "redirect:/product/" + pid;
+	}
+	
+	@GetMapping("/cart")
+	public String loadCartPage(Principal p, Model m) {
+
+		UserDtls user = getLoggedInUserDetails(p);
+		List<Cart> carts = cartService.getCartsByUser(user.getId());
+		m.addAttribute("carts", carts);
+		if (carts.size() > 0) {
+			Double totalOrderPrice = carts.get(carts.size() - 1).getTotalOrderPrice();
+			m.addAttribute("totalOrderPrice", totalOrderPrice);
+		}
+		return "/user/cart";
+	}
+
+	@GetMapping("/cartQuantityUpdate")
+	public String updateCartQuantity(@RequestParam String sy, @RequestParam Integer cid) {
+		cartService.updateQuantity(sy, cid);
+		return "redirect:/user/cart";
+	}
+
+	private UserDtls getLoggedInUserDetails(Principal p) {
+		String email = p.getName();
+		UserDtls userDtls = userService.getUserByEmail(email);
+		return userDtls;
 	}
 }
