@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
 </head>
+
 <body>
 	<section>
 		<div class="container-fluid mt-5 p-5">
@@ -37,18 +38,17 @@
 						<tbody>
 							<tr th:each="cart,c:${carts}">
 								<th scope="row">[[${c.count}]]</th>
-								<td><img
-									th:src="@{'/img/product_img/'+${cart.product.image}}"
-									width="70px" height="70px"></td>
+								<td><img th:src="@{'/img/product_img/'+${cart.product.image}}" width="70px"
+										height="70px"></td>
 								<td>[[${cart.product.title}]]</td>
 								<td>[[${cart.product.discountPrice}]]</td>
 								<td class="text-center"><a
-									th:href="@{'/user/cartQuantityUpdate?sy=de&cid='+${cart.id}}">
+										th:href="@{'/user/cartQuantityUpdate?sy=de&cid='+${cart.id}}">
 										<i class="fa-solid fa-minus"></i>
-								</a> [ [[${cart.quantity}]] ] <a
-									th:href="@{'/user/cartQuantityUpdate?sy=in&cid='+${cart.id}}">
+									</a> [ [[${cart.quantity}]] ] <a
+										th:href="@{'/user/cartQuantityUpdate?sy=in&cid='+${cart.id}}">
 										<i class="fa-solid fa-plus"></i>
-								</a></td>
+									</a></td>
 								<td>[[${cart.totalPrice}]]</td>
 							</tr>
 							<tr>
@@ -60,7 +60,7 @@
 						</tbody>
 					</table>
 					<div class="text-center">
-						<a href="#" class="btn btn-warning"> Proceed Payment</a>
+						<a href="/user/orders" class="btn btn-warning"> Proceed Payment</a>
 					</div>
 				</div>
 			</div>
@@ -68,4 +68,5 @@
 
 	</section>
 </body>
+
 </html>
