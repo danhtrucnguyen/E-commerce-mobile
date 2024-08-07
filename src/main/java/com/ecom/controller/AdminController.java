@@ -24,11 +24,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ecom.model.Category;
 import com.ecom.model.Product;
+import com.ecom.model.ProductOrder;
 import com.ecom.model.UserDtls;
 import com.ecom.service.CartService;
 import com.ecom.service.CategoryService;
+import com.ecom.service.OrderService;
 import com.ecom.service.ProductService;
 import com.ecom.service.UserService;
+import com.ecom.util.CommonUtil;
+import com.ecom.util.OrderStatus;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -41,14 +45,19 @@ public class AdminController {
 
 	@Autowired
 	private ProductService productService;
-	
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private CartService cartService;
-	
+
+	@Autowired
+	private OrderService orderService;
+
+	@Autowired
+	private CommonUtil commonUtil;
+
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
 		if (p != null) {
@@ -62,6 +71,7 @@ public class AdminController {
 		List<Category> allActiveCategory = categoryService.getAllActiveCategory();
 		m.addAttribute("categorys", allActiveCategory);
 	}
+
 	@GetMapping("/")
 	public String index() {
 		return "admin/index";
@@ -126,13 +136,13 @@ public class AdminController {
 
 		return "redirect:/admin/category";
 	}
-	
+
 	@GetMapping("/loadEditCategory/{id}")
 	public String loadEditCategory(@PathVariable int id, Model m) {
 		m.addAttribute("category", categoryService.getCategoryById(id));
 		return "admin/edit_category";
 	}
-	
+
 	@PostMapping("/updateCategory")
 	public String updateCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
 			HttpSession session) throws IOException {
@@ -168,7 +178,7 @@ public class AdminController {
 
 		return "redirect:/admin/loadEditCategory/" + category.getId();
 	}
-	
+
 	@PostMapping("/saveProduct")
 	public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
 			HttpSession session) throws IOException {
@@ -176,7 +186,8 @@ public class AdminController {
 		String imageName = image.isEmpty() ? "default.jpg" : image.getOriginalFilename();
 
 		product.setImage(imageName);
-
+		product.setDiscount(0);
+		product.setDiscountPrice(product.getPrice());
 		Product saveProduct = productService.saveProduct(product);
 
 		if (!ObjectUtils.isEmpty(saveProduct)) {
@@ -186,7 +197,7 @@ public class AdminController {
 			Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator
 					+ image.getOriginalFilename());
 
-			System.out.println(path);
+			// System.out.println(path);
 			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
 			session.setAttribute("succMsg", "Product Saved Success");
@@ -196,13 +207,13 @@ public class AdminController {
 
 		return "redirect:/admin/loadAddProduct";
 	}
-	
+
 	@GetMapping("/products")
 	public String loadViewProduct(Model m) {
 		m.addAttribute("products", productService.getAllProducts());
 		return "admin/products";
 	}
-	
+
 	@GetMapping("/deleteProduct/{id}")
 	public String deleteProduct(@PathVariable int id, HttpSession session) {
 		Boolean deleteProduct = productService.deleteProduct(id);
@@ -213,14 +224,14 @@ public class AdminController {
 		}
 		return "redirect:/admin/products";
 	}
-	
+
 	@GetMapping("/editProduct/{id}")
 	public String editProduct(@PathVariable int id, Model m) {
 		m.addAttribute("product", productService.getProductById(id));
 		m.addAttribute("categories", categoryService.getAllCategory());
 		return "admin/edit_product";
 	}
-	
+
 	@PostMapping("/updateProduct")
 	public String updateProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
 			HttpSession session, Model m) {
@@ -237,14 +248,14 @@ public class AdminController {
 		}
 		return "redirect:/admin/editProduct/" + product.getId();
 	}
-	
+
 	@GetMapping("/users")
 	public String getAllUsers(Model m) {
 		List<UserDtls> users = userService.getUsers("ROLE_USER");
 		m.addAttribute("users", users);
 		return "/admin/users";
 	}
-	
+
 	@GetMapping("/updateSts")
 	public String updateUserAccountStatus(@RequestParam Boolean status, @RequestParam Integer id, HttpSession session) {
 		Boolean f = userService.updateAccountStatus(id, status);
@@ -255,4 +266,40 @@ public class AdminController {
 		}
 		return "redirect:/admin/users";
 	}
+
+	@GetMapping("/orders")
+	public String getAllOrders(Model m) {
+		List<ProductOrder> allOrders = orderService.getAllOrders();
+		m.addAttribute("orders", allOrders);
+		return "/admin/orders";
+	}
+
+	@PostMapping("/update-order-status")
+	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
+
+		OrderStatus[] values = OrderStatus.values();
+		String status = null;
+
+		for (OrderStatus orderSt : values) {
+			if (orderSt.getId().equals(st)) {
+				status = orderSt.getName();
+			}
+		}
+
+		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+
+		try {
+			commonUtil.sendMailForProductOrder(updateOrder, status);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (!ObjectUtils.isEmpty(updateOrder)) {
+			session.setAttribute("succMsg", "Status Updated");
+		} else {
+			session.setAttribute("errorMsg", "status not updated");
+		}
+		return "redirect:/admin/orders";
+	}
+
 }

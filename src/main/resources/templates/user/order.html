@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
 <head>
-	<meta charset="ISO-8859-1">
-	<title>Insert title here</title>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
 </head>
-
 <body>
 	<section>
 
@@ -31,7 +30,8 @@
 
 						<div class="mb-3 row">
 							<div class="col p-1">
-								<label>Email</label> <input type="email" name="email" required class="form-control col">
+								<label>Email</label> <input type="email" name="email" required
+									class="form-control col">
 							</div>
 							<div class="col p-1">
 								<label>Mobile Number</label> <input type="text" name="mobileNo" required
@@ -51,7 +51,8 @@
 						</div>
 						<div class="mb-3 row">
 							<div class="col p-1">
-								<label>State</label> <input type="text" name="state" required class="form-control col">
+								<label>State</label> <input type="text" name="state" required
+									class="form-control col">
 							</div>
 							<div class="col p-1">
 								<label>Pincode</label> <input type="number" name="pincode" required
@@ -71,7 +72,7 @@
 										<tr>
 											<td>Total price</td>
 											<td>:</td>
-											<td>&#8377; 345323</td>
+											<td>&#8377; [[${orderPrice}]]</td>
 										</tr>
 										<tr>
 											<td>Delivery Fee</td>
@@ -88,7 +89,7 @@
 										<tr class="border-top">
 											<td>Total Price</td>
 											<td>:</td>
-											<td>&#8377; 235324</td>
+											<td>&#8377; [[${totalOrderPrice}]]</td>
 										</tr>
 									</tbody>
 								</table>
@@ -122,5 +123,4 @@
 
 	</section>
 </body>
-
 </html>
