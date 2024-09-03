@@ -1,3 +1,4 @@
+
 package com.ecom.service.impl;
 
 import java.io.File;
@@ -42,17 +43,17 @@ public class UserServiceImpl implements UserService {
 		UserDtls saveUser = userRepository.save(user);
 		return saveUser;
 	}
-	
+
 	@Override
 	public UserDtls getUserByEmail(String email) {
 		return userRepository.findByEmail(email);
 	}
-	
+
 	@Override
 	public List<UserDtls> getUsers(String role) {
 		return userRepository.findByRole(role);
 	}
-	
+
 	@Override
 	public Boolean updateAccountStatus(Integer id, Boolean status) {
 
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
 		return false;
 	}
-	//sai mat khau, khoa tai khoan
+
 	@Override
 	public void increaseFailedAttempt(UserDtls user) {
 		int attempt = user.getFailedAttempt() + 1;
@@ -100,20 +101,19 @@ public class UserServiceImpl implements UserService {
 
 		return false;
 	}
-	
+
 	@Override
 	public void resetAttempt(int userId) {
 
-	}	
-	
-	//Forgot password | Reset Password
+	}
+
 	@Override
 	public void updateUserResetToken(String email, String resetToken) {
 		UserDtls findByEmail = userRepository.findByEmail(email);
 		findByEmail.setResetToken(resetToken);
 		userRepository.save(findByEmail);
 	}
-	
+
 	@Override
 	public UserDtls getUserByToken(String token) {
 		return userRepository.findByResetToken(token);
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
 	public UserDtls updateUser(UserDtls user) {
 		return userRepository.save(user);
 	}
-	
+
 	@Override
 	public UserDtls updateUserProfile(UserDtls user, MultipartFile img) {
 
@@ -160,5 +160,23 @@ public class UserServiceImpl implements UserService {
 
 		return dbUser;
 	}
+
+	@Override
+	public UserDtls saveAdmin(UserDtls user) {
+		user.setRole("ROLE_ADMIN");
+		user.setIsEnable(true);
+		user.setAccountNonLocked(true);
+		user.setFailedAttempt(0);
+
+		String encodePassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodePassword);
+		UserDtls saveUser = userRepository.save(user);
+		return saveUser;
+	}
 	
+	@Override
+	public Boolean existsEmail(String email) {
+		return userRepository.existsByEmail(email);
+	}
+
 }

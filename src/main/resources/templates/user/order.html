@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
 </head>
+
 <body>
 	<section>
 
 		<div class="container mt-5 p-5">
-			<form action="/user/save-order" method="post">
+			<form action="/user/save-order" method="post" id="orders" novalidate>
 				<div class="row">
 
 					<div class="col-md-6">
@@ -30,8 +31,7 @@
 
 						<div class="mb-3 row">
 							<div class="col p-1">
-								<label>Email</label> <input type="email" name="email" required
-									class="form-control col">
+								<label>Email</label> <input type="email" name="email" required class="form-control col">
 							</div>
 							<div class="col p-1">
 								<label>Mobile Number</label> <input type="text" name="mobileNo" required
@@ -51,8 +51,7 @@
 						</div>
 						<div class="mb-3 row">
 							<div class="col p-1">
-								<label>State</label> <input type="text" name="state" required
-									class="form-control col">
+								<label>State</label> <input type="text" name="state" required class="form-control col">
 							</div>
 							<div class="col p-1">
 								<label>Pincode</label> <input type="number" name="pincode" required
@@ -103,7 +102,7 @@
 								<div class="mb-3">
 									<label class="form-label">Select Payment Type</label> <select required
 										name="paymentType" class="form-control">
-										<option>--select--</option>
+										<option value="">--select--</option>
 										<option value="COD">Cash On Delivery</option>
 										<option value="ONLINE">Online Payment</option>
 									</select>
@@ -123,4 +122,5 @@
 
 	</section>
 </body>
+
 </html>
